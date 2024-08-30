@@ -4,11 +4,17 @@ info:
   version: 1.0.0
   description: 사용자 인증, 회원가입, 토큰 관리를 위한 API
 
+tags:
+  - name: authentication
+    description: 인가, 인증에 관한 작업들
+
 paths:
   /auth/phone:
     post:
       summary: 휴대폰 번호 인증 요청
       description: 사용자의 휴대폰 번호로 인증 코드를 발송합니다.
+      tags:
+        - authentication
       requestBody:
         required: true
         content:
@@ -25,6 +31,8 @@ paths:
     post:
       summary: 인증 코드 확인
       description: 사용자가 입력한 인증 코드의 유효성을 확인합니다.
+      tags:
+        - authentication
       requestBody:
         required: true
         content:
@@ -47,6 +55,8 @@ paths:
     post:
       summary: 회원가입 완료
       description: Register Token과 사용자 프로필 정보를 이용하여 회원가입을 완료합니다.
+      tags:
+        - authentication
       requestBody:
         required: true
         content:
@@ -67,6 +77,8 @@ paths:
     post:
       summary: 액세스 토큰 갱신
       description: 리프레시 토큰을 이용하여 새로운 액세스 토큰을 발급받습니다.
+      tags:
+        - authentication
       requestBody:
         required: true
         content:
