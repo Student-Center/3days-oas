@@ -6,7 +6,7 @@ info:
 
 tags:
   - name: authentication
-    description: operations for authentication
+    description: 인가, 인증에 관한 작업들
 
 paths:
   /auth/phone:
