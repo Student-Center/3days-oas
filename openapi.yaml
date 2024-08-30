@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  title: WEAVE - 인증 API
+  title: 3Days - 인증 API
   version: 1.0.0
   description: 사용자 인증, 회원가입, 토큰 관리를 위한 API
 
