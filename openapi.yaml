@@ -122,6 +122,34 @@ paths:
         '409':
           description: 이미 존재하는 사용자
 
+  /users/token/refresh:
+    post:
+      summary: 액세스 토큰 갱신
+      description: |
+        - 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다.
+      tags:
+        - users
+      operationId: refreshToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  description: 유효한 리프레시 토큰
+      responses:
+        '200':
+          description: 토큰 갱신 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '401':
+          description: 유효하지 않거나 만료된 리프레시 토큰
+
 components:
   securitySchemes:
     BearerAuth:
