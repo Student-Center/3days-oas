@@ -150,6 +150,20 @@ paths:
         '401':
           description: 유효하지 않거나 만료된 리프레시 토큰
 
+  /locations:
+    get:
+      summary: 장소 리스트 조회
+      description: 장소 리스트를 조회합니다.
+      tags:
+        - locations
+      responses:
+        '200':
+          description: 장소 리스트 응답
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocationsResponse'
+
 components:
   securitySchemes:
     BearerAuth:
@@ -280,6 +294,29 @@ components:
         expiresIn:
           type: integer
           description: 액세스 토큰의 유효 기간 (초 단위)
+    LocationsResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/Location'
+      description: 위치 정보 리스트 응답
+
+    Location:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "0191cd0e-a061-7213-b39e-51274c1e7c71"
+        region:
+          type: string
+          example: "서울특별시"
+        sub_region:
+          type: string
+          example: "종로구"
+      required:
+        - id
+        - region
+        - sub_region
 
 security:
   - BearerAuth: [ ]
