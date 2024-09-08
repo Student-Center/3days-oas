@@ -315,12 +315,5 @@ components:
         - region
         - sub_region
 
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-      description: Bearer 토큰을 이용한 인증
-
 security:
   - BearerAuth: [ ]
