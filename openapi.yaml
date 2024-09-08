@@ -196,7 +196,8 @@ components:
           type: array
           items:
             type: string
-          description: 사용자의 활동 지역 목록
+            format: uuid
+          description: 사용자의 활동 지역 목록 ID 리스트
       required:
         - gender
         - birthYear
