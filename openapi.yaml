@@ -306,10 +306,13 @@ components:
         id:
           type: string
           format: uuid
+          example: "0191cd0e-a061-7213-b39e-51274c1e7c71"
         region:
           type: string
+          example: "서울특별시"
         sub_region:
           type: string
+          example: "종로구"
       required:
         - id
         - region
