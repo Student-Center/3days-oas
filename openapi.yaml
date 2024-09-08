@@ -158,7 +158,7 @@ paths:
         - locations
       responses:
         '200':
-          description: 장로 리스트 응답
+          description: 장소 리스트 응답
           content:
             application/json:
               schema:
