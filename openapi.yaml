@@ -27,7 +27,7 @@ paths:
                 phoneNumber:
                   type: string
                   description: 사용자의 전화번호 (한국 휴대폰 번호 형식)
-                  pattern: '^01[016789][\\-]?\\d{3,4}[\\-]?\\d{4}$'
+                  pattern: '^01[0-9]{8,9}$'
       responses:
         '201':
           description: 인증 요청 성공
