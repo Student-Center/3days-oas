@@ -7,6 +7,17 @@ info:
 tags:
   - name: users
     description: 사용자 관련 API
+  - name: locations
+    description: 위치 관련 API
+
+parameters:
+  OSTypeHeader:
+    in: header
+    name: X-OS-Type
+    required: true
+    schema:
+      $ref: '#/components/schemas/OSType'
+    description: 사용자의 OS 유형 (IOS 또는 AOS)
 
 paths:
   /users/verifications:
@@ -17,6 +28,8 @@ paths:
       tags:
         - users
       operationId: requestVerification
+      parameters:
+        - $ref: '#/parameters/OSTypeHeader'
       requestBody:
         required: true
         content:
@@ -41,7 +54,7 @@ paths:
                     format: uuid
                     description: 인증 요청에 대한 고유 식별자 (UUID 형식)
         '400':
-          description: 잘못된 전화번호 형식
+          description: 잘못된 전화번호 형식 또는 유효하지 않은 OS 유형
 
   /users/verifications/{verificationId}:
     put:
@@ -54,6 +67,7 @@ paths:
         - users
       operationId: verifyCode
       parameters:
+        - $ref: '#/parameters/OSTypeHeader'
         - in: path
           name: verificationId
           required: true
@@ -95,6 +109,8 @@ paths:
       tags:
         - users
       operationId: registerUser
+      parameters:
+        - $ref: '#/parameters/OSTypeHeader'
       security:
         - BearerAuth: [ ]
       requestBody:
@@ -130,6 +146,8 @@ paths:
       tags:
         - users
       operationId: refreshToken
+      parameters:
+        - $ref: '#/parameters/OSTypeHeader'
       requestBody:
         required: true
         content:
@@ -156,6 +174,8 @@ paths:
       description: 장소 리스트를 조회합니다.
       tags:
         - locations
+      parameters:
+        - $ref: '#/parameters/OSTypeHeader'
       responses:
         '200':
           description: 장소 리스트 응답
@@ -240,7 +260,7 @@ components:
           enum: [ ONLY_MY_AREA, INCLUDE_SURROUNDING_REGIONS, ANYWHERE ]
           description: 선호하는 거리 (내 지역만, 주변 지역 포함, 어디든)
       required:
-        - ageRange
+        - birthYearRange
         - job
         - preferDistance
 
@@ -294,6 +314,7 @@ components:
         expiresIn:
           type: integer
           description: 액세스 토큰의 유효 기간 (초 단위)
+
     LocationsResponse:
       type: array
       items:
@@ -317,6 +338,11 @@ components:
         - id
         - region
         - sub_region
+
+    OSType:
+      type: string
+      enum: [ IOS, AOS ]
+      description: 사용자의 운영 체제 유형
 
 security:
   - BearerAuth: [ ]
