@@ -445,15 +445,15 @@ components:
         - sub_region
 
     Company:
-      "type": object
-      "properties":
-        "id":
-          "type": string
-          "description": "회사 식별자"
-        "name":
-          "type": string
-          "description": "회사명"
-      "required":
+      type: object
+      properties:
+        id:
+          type: string
+          description: "회사 식별자"
+        name:
+          type: string
+          description: "회사명"
+      required:
         - id
         - name
 
