@@ -198,7 +198,7 @@ paths:
           required: true
           schema:
             type: string
-        - name: since
+        - name: next
           in: query
           description: ID to start the search from for pagination
           required: false
@@ -232,6 +232,8 @@ paths:
     get:
       summary: 직장 식별자를 통한 직장 조회
       description: 직장 식별자에 대응되는 직장 정보 조회
+      tags:
+        - companies
       parameters:
         - name: companyId
           in: path
@@ -239,6 +241,7 @@ paths:
           required: true
           schema:
             type: string
+            format: uuid
       responses:
         '200':
           description: Successful response
@@ -250,6 +253,12 @@ paths:
                   company:
                     type: object
                     $ref: '#/components/schemas/Company'
+        '404':
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   securitySchemes:
@@ -260,6 +269,35 @@ components:
       description: Bearer 토큰을 이용한 인증
 
   schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: integer
+          format: int64
+          description: 에러발생시각 timestamp
+        status:
+          type: integer
+          description: http status code
+        error:
+          type: string
+          description: The error type
+          example: USER
+        exception:
+          type: string
+          description: The exception class name
+        message:
+          type: string
+          description: Detailed error message, customizable per API
+        path:
+          type: string
+          description: The path of the request that caused the error
+      required:
+        - timestamp
+        - status
+        - error
+        - message
+        - path
     UserRegistration:
       type: object
       description: 회원 가입 시 필요한 사용자 정보
