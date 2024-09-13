@@ -198,6 +198,8 @@ paths:
           required: true
           schema:
             type: string
+            minLength: 1
+            maxLength: 128
         - name: next
           in: query
           description: ID to start the search from for pagination
@@ -450,6 +452,7 @@ components:
       properties:
         id:
           type: string
+          format: uuid
           description: "회사 식별자"
         name:
           type: string
