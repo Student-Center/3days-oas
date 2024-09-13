@@ -204,6 +204,7 @@ paths:
           required: false
           schema:
             type: string
+            format: uuid
         - name: limit
           in: query
           description: Maximum number of results to return
