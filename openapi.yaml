@@ -9,6 +9,8 @@ tags:
     description: 사용자 관련 API
   - name: locations
     description: 위치 관련 API
+  - name: companies
+    description: 직장 관련 API
 
 parameters:
   OSTypeHeader:
@@ -183,6 +185,81 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LocationsResponse'
+  /companies:
+    get:
+      summary: 직장명을 통한 직장 검색 기능
+      description: 키워드로 주어진 name으로 시작하는 직장 리스트를 반환합니다
+      tags:
+        - companies
+      parameters:
+        - name: name
+          in: query
+          description: Name of the company to search for
+          required: true
+          schema:
+            type: string
+        - name: next
+          in: query
+          description: ID to start the search from for pagination
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: limit
+          in: query
+          description: Maximum number of results to return
+          required: false
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  companies:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Company'
+                  next:
+                    type: string
+                    description: Next key for pagination, null if no more results
+  /companies/{companyId}:
+    get:
+      summary: 직장 식별자를 통한 직장 조회
+      description: 직장 식별자에 대응되는 직장 정보 조회
+      tags:
+        - companies
+      parameters:
+        - name: companyId
+          in: path
+          description: 직장 식별자
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  company:
+                    type: object
+                    $ref: '#/components/schemas/Company'
+        '404':
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   securitySchemes:
@@ -193,6 +270,35 @@ components:
       description: Bearer 토큰을 이용한 인증
 
   schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: integer
+          format: int64
+          description: 에러발생시각 timestamp
+        status:
+          type: integer
+          description: http status code
+        error:
+          type: string
+          description: The error type
+          example: USER
+        exception:
+          type: string
+          description: The exception class name
+        message:
+          type: string
+          description: Detailed error message, customizable per API
+        path:
+          type: string
+          description: The path of the request that caused the error
+      required:
+        - timestamp
+        - status
+        - error
+        - message
+        - path
     UserRegistration:
       type: object
       description: 회원 가입 시 필요한 사용자 정보
@@ -338,6 +444,19 @@ components:
         - id
         - region
         - sub_region
+
+    Company:
+      type: object
+      properties:
+        id:
+          type: string
+          description: "회사 식별자"
+        name:
+          type: string
+          description: "회사명"
+      required:
+        - id
+        - name
 
     OSType:
       type: string
