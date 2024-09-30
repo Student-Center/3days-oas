@@ -11,6 +11,10 @@ tags:
     description: 위치 관련 API
   - name: companies
     description: 직장 관련 API
+  - name: auth
+    description: 인증 관련 API
+  - name: jobs
+    description: 직업 관련 API
 
 paths:
   /users/verifications:
@@ -18,7 +22,7 @@ paths:
       summary: SMS 인증 요청
       description: 회원 가입 또는 로그인 토큰 발급을 위한 SMS 인증을 요청합니다.
       tags:
-        - users
+        - auth
       operationId: requestVerification
       parameters:
         - $ref: '#/components/parameters/OSTypeHeader'
@@ -57,7 +61,7 @@ paths:
       summary: SMS 인증 코드 확인
       description: SMS 인증 요청 시 발급된 verificationId와 함께 인증 코드를 입력하여 인증을 완료합니다.
       tags:
-        - users
+        - auth
       operationId: verifyCode
       parameters:
         - $ref: '#/components/parameters/OSTypeHeader'
@@ -104,8 +108,7 @@ paths:
       operationId: registerUser
       parameters:
         - $ref: '#/components/parameters/OSTypeHeader'
-      security:
-        - BearerAuth: [ ]
+        - $ref: '#/components/parameters/RegisterTokenHeader'
       requestBody:
         required: true
         content:
@@ -136,7 +139,7 @@ paths:
       summary: 액세스 토큰 갱신
       description: 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다.
       tags:
-        - users
+        - auth
       operationId: refreshToken
       parameters:
         - $ref: '#/components/parameters/OSTypeHeader'
@@ -259,6 +262,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /jobs:
+    get:
+      summary: 직업 검색
+      description: 직업을 검색합니다
+      tags:
+        - jobs
+      parameters:
+        - name: name
+          in: query
+          description: 직업명
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 128
+        - name: next
+          in: query
+          description: ID to start the search from for pagination
+          required: false
+          schema:
+            type: string
+            format: uuid
+        - name: limit
+          in: query
+          description: Maximum number of results to return
+          required: false
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: 직업 검색 결과
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  jobs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Job'
+                  next:
+                    type: string
+                    description: 다음 페이지를 위한 키
 
 components:
   securitySchemes:
@@ -276,6 +325,14 @@ components:
       schema:
         $ref: '#/components/schemas/OSType'
       description: 사용자의 OS 유형 (IOS 또는 AOS)
+
+    RegisterTokenHeader:
+      in: header
+      name: X-Register-Token
+      required: true
+      schema:
+        type: string
+      description: Register Token (번호 인증후 발급받은 토큰)
 
   schemas:
     ErrorResponse:
@@ -335,13 +392,15 @@ components:
         birthYear:
           type: integer
           description: 사용자의 출생년도
-        company:
+        companyId:
           type: string
-          description: 사용자의 회사명
-        job:
+          format: uuid
+          description: 사용자의 회사 ID
+        jobId:
           type: string
-          description: 사용자의 직업
-        locations:
+          format: uuid
+          description: 사용자의 직업 ID
+        locationIds:
           type: array
           items:
             type: string
@@ -350,9 +409,9 @@ components:
       required:
         - gender
         - birthYear
-        - company
-        - job
-        - locations
+        - companyId
+        - jobId
+        - locationIds
 
     UserDesiredPartner:
       type: object
@@ -363,23 +422,39 @@ components:
           properties:
             start:
               type: integer
-              description: 원하는 파트너의 최소 년생 (ex, 1990)
+              description: 원하는 파트너의 최소 년생
+              example: 1990
             end:
               type: integer
-              description: 원하는 파트너의 최대 년생 (ex, 2000)
+              description: 원하는 파트너의 최대 년생
+              example: 2000
           required:
             - start
             - end
-        job:
+        jobOccupation:
           type: string
-          description: 원하는 파트너의 직업
+          enum: [
+            BUSINESS_ADMIN,
+            FINANCE_INSURANCE,
+            RESEARCH_ENGINEERING,
+            EDUCATION,
+            LAW,
+            POLICE_MILITARY,
+            IT_SOFTWARE,
+            DESIGN_ART,
+            SPORTS,
+            HEALTHCARE,
+            FREELANCER,
+            OTHER,
+          ]
+          description: 선호하는 직업군
         preferDistance:
           type: string
           enum: [ ONLY_MY_AREA, INCLUDE_SURROUNDING_REGIONS, ANYWHERE ]
           description: 선호하는 거리 (내 지역만, 주변 지역 포함, 어디든)
       required:
         - birthYearRange
-        - job
+        - jobOccupation
         - preferDistance
 
     User:
@@ -486,10 +561,21 @@ components:
         - id
         - name
 
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: "직업 식별자"
+        name:
+          type: string
+          description: "직업명"
+      required:
+        - id
+        - name
+
     OSType:
       type: string
       enum: [ IOS, AOS ]
       description: 사용자의 운영 체제 유형
-
-security:
-  - BearerAuth: [ ]
