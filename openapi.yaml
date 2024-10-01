@@ -17,7 +17,7 @@ tags:
     description: 직업 정보 조회 및 검색 API
 
 paths:
-  /users/verifications:
+  /auth/codes:
     post:
       summary: SMS 인증 요청
       description: 회원 가입 또는 로그인을 위한 SMS 인증을 요청합니다.
@@ -31,32 +31,32 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PhoneNumberRequest'
+              $ref: '#/components/schemas/SendAuthCodeRequest'
       responses:
         '201':
           description: 인증 요청 성공
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RequestVerificationResponse'
+                $ref: '#/components/schemas/SendAuthCodeResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
 
-  /users/verifications/{verificationId}:
+  /auth/codes/{authCodeId}:
     put:
       summary: SMS 인증 코드 확인
-      description: 발급된 verificationId와 SMS 인증 코드로 인증을 완료합니다.
+      description: 발급된 인증 코드 아이디(authCodeId)와 SMS 인증 코드로 인증을 완료합니다.
       tags:
         - auth
       operationId: verifyCode
       parameters:
-        - $ref: '#/components/parameters/VerificationIdPath'
+        - $ref: '#/components/parameters/AuthCodeIdPath'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VerificationCodeRequest'
+              $ref: '#/components/schemas/VerifyCodeRequest'
       responses:
         '200':
           description: 인증 완료 및 토큰 발급
@@ -83,7 +83,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserRegistration'
+              $ref: '#/components/schemas/RegisterUserRequest'
       responses:
         '201':
           description: 회원 가입 성공
@@ -101,7 +101,7 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
-  /users/token/refresh:
+  /auth/token/refresh:
     post:
       summary: 액세스 토큰 갱신
       description: 리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다.
@@ -221,9 +221,9 @@ components:
         type: string
       description: 번호 인증 후 발급받은 회원가입용 토큰
 
-    VerificationIdPath:
+    AuthCodeIdPath:
       in: path
-      name: verificationId
+      name: authCodeId
       required: true
       schema:
         type: string
@@ -322,7 +322,7 @@ components:
         - message
         - path
 
-    PhoneNumberRequest:
+    SendAuthCodeRequest:
       type: object
       properties:
         phoneNumber:
@@ -332,17 +332,17 @@ components:
       required:
         - phoneNumber
 
-    RequestVerificationResponse:
+    SendAuthCodeResponse:
       type: object
       properties:
-        verificationId:
+        authCodeId:
           type: string
           format: uuid
           description: 인증 요청에 대한 고유 식별자 (UUID 형식)
       required:
-        - verificationId
+        - authCodeId
 
-    VerificationCodeRequest:
+    VerifyCodeRequest:
       type: object
       properties:
         verificationCode:
@@ -352,27 +352,57 @@ components:
       required:
         - verificationCode
 
+    VerifyCodeResponseType:
+      type: string
+      enum: [ EXISTING_USER, NEW_USER ]
+
     VerifyCodeResponse:
       type: object
-      description: 인증 응답 (기존 사용자와 신규 사용자 모두에 해당)
+      discriminator:
+        propertyName: responseType
+        mapping:
+          EXISTING_USER: '#/components/schemas/ExistingUserVerificationResponse'
+          NEW_USER: '#/components/schemas/NewUserVerificationResponse'
+      required:
+        - responseType
       properties:
-        accessToken:
-          type: string
-          description: 액세스 토큰 (기존 사용자일 경우에만 포함)
-        refreshToken:
-          type: string
-          description: 리프레시 토큰 (기존 사용자일 경우에만 포함)
-        expiresIn:
-          type: integer
-          description: 액세스 토큰의 유효 기간 (초 단위, 기존 사용자일 경우에만 포함)
-        registerToken:
-          type: string
-          description: 회원 가입을 위한 토큰 (신규 사용자일 경우에만 포함)
-      oneOf:
-        - required: [ accessToken, refreshToken, expiresIn ]
-        - required: [ registerToken ]
+        responseType:
+          $ref: '#/components/schemas/VerifyCodeResponseType'
+      description: 인증 응답 (기존 사용자와 신규 사용자 모두에 해당)
 
-    UserRegistration:
+    ExistingUserVerifyCodeResponse:
+      allOf:
+        - $ref: '#/components/schemas/VerifyCodeResponse'
+        - type: object
+          description: 기존 사용자 인증 응답
+          required:
+            - accessToken
+            - refreshToken
+            - expiresIn
+          properties:
+            accessToken:
+              type: string
+              description: 액세스 토큰
+            refreshToken:
+              type: string
+              description: 리프레시 토큰
+            expiresIn:
+              type: integer
+              description: 액세스 토큰의 유효 기간 (초 단위)
+
+    NewUserVerifyCodeResponse:
+      allOf:
+        - $ref: '#/components/schemas/VerifyCodeResponse'
+        - type: object
+          description: 새 사용자 인증 응답
+          required:
+            - registerToken
+          properties:
+            registerToken:
+              type: string
+              description: 회원 가입을 위한 토큰
+
+    RegisterUserRequest:
       type: object
       description: 회원 가입 시 필요한 사용자 정보
       properties:
