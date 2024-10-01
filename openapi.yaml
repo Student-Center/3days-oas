@@ -361,8 +361,8 @@ components:
       discriminator:
         propertyName: responseType
         mapping:
-          EXISTING_USER: '#/components/schemas/ExistingUserVerificationResponse'
-          NEW_USER: '#/components/schemas/NewUserVerificationResponse'
+          EXISTING_USER: '#/components/schemas/ExistingUserVerifyCodeResponse'
+          NEW_USER: '#/components/schemas/NewUserVerifyCodeResponse'
       required:
         - responseType
       properties:
