@@ -87,13 +87,11 @@ paths:
                 - verificationCode
       responses:
         '200':
-          description: 인증 완료
+          description: 기존 사용자 인증 완료, 액세스 토큰 발급
           content:
             application/json:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/NewUserVerificationResponse'
-                  - $ref: '#/components/schemas/ExistingUserVerificationResponse'
+                $ref: '#/components/schemas/VerificationResponse'
         '400':
           description: 잘못되거나 만료된 인증 코드
         '404':
@@ -477,33 +475,25 @@ components:
         - profile
         - desiredPartner
 
-    NewUserVerificationResponse:
+    VerificationResponse:
       type: object
-      description: 새 사용자 인증 응답
-      properties:
-        registerToken:
-          type: string
-          description: 회원 가입을 위한 토큰
-      required:
-        - registerToken
-
-    ExistingUserVerificationResponse:
-      type: object
-      description: 기존 사용자 인증 응답
+      description: 인증 응답 (기존 사용자와 신규 사용자 모두에 해당)
       properties:
         accessToken:
           type: string
-          description: 액세스 토큰
+          description: 액세스 토큰 (기존 사용자일 경우에만 포함)
         refreshToken:
           type: string
-          description: 리프레시 토큰
+          description: 리프레시 토큰 (기존 사용자일 경우에만 포함)
         expiresIn:
           type: integer
-          description: 액세스 토큰의 유효 기간 (초 단위)
-      required:
-        - accessToken
-        - refreshToken
-        - expiresIn
+          description: 액세스 토큰의 유효 기간 (초 단위, 기존 사용자일 경우에만 포함)
+        registerToken:
+          type: string
+          description: 회원 가입을 위한 토큰 (신규 사용자일 경우에만 포함)
+      oneOf:
+        - required: [ accessToken, refreshToken, expiresIn ]
+        - required: [ registerToken ]
 
     TokenResponse:
       type: object
