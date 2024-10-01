@@ -6,21 +6,21 @@ info:
 
 tags:
   - name: users
-    description: 사용자 관련 API
-  - name: locations
-    description: 위치 관련 API
-  - name: companies
-    description: 직장 관련 API
+    description: 사용자 계정 관리 및 프로필 관련 API
   - name: auth
-    description: 인증 관련 API
+    description: 사용자 인증 및 토큰 관리 API
+  - name: locations
+    description: 지역 및 위치 정보 관련 API
+  - name: companies
+    description: 회사 정보 조회 및 검색 API
   - name: jobs
-    description: 직업 관련 API
+    description: 직업 정보 조회 및 검색 API
 
 paths:
   /users/verifications:
     post:
       summary: SMS 인증 요청
-      description: 회원 가입 또는 로그인 토큰 발급을 위한 SMS 인증을 요청합니다.
+      description: 회원 가입 또는 로그인을 위한 SMS 인증을 요청합니다.
       tags:
         - auth
       operationId: requestVerification
@@ -31,83 +31,52 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                phoneNumber:
-                  type: string
-                  description: 사용자의 전화번호 (한국 휴대폰 번호 형식)
-                  pattern: '^01[0-9]{8,9}$'
-              required:
-                - phoneNumber
+              $ref: '#/components/schemas/PhoneNumberRequest'
       responses:
         '201':
           description: 인증 요청 성공
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  verificationId:
-                    type: string
-                    format: uuid
-                    description: 인증 요청에 대한 고유 식별자 (UUID 형식)
-                required:
-                  - verificationId
+                $ref: '#/components/schemas/RequestVerificationResponse'
         '400':
-          description: 잘못된 전화번호 형식 또는 유효하지 않은 OS 유형
+          $ref: '#/components/responses/BadRequest'
 
   /users/verifications/{verificationId}:
     put:
       summary: SMS 인증 코드 확인
-      description: SMS 인증 요청 시 발급된 verificationId와 함께 인증 코드를 입력하여 인증을 완료합니다.
+      description: 발급된 verificationId와 SMS 인증 코드로 인증을 완료합니다.
       tags:
         - auth
       operationId: verifyCode
       parameters:
-        - $ref: '#/components/parameters/OSTypeHeader'
-        - in: path
-          name: verificationId
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: 인증 요청 시 발급된 고유 식별자 (UUID 형식)
+        - $ref: '#/components/parameters/VerificationIdPath'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                verificationCode:
-                  type: string
-                  description: 사용자가 입력한 SMS 인증 코드 (6자리 숫자)
-                  pattern: '^\d{6}$'
-              required:
-                - verificationCode
+              $ref: '#/components/schemas/VerificationCodeRequest'
       responses:
         '200':
-          description: 인증 완료
+          description: 인증 완료 및 토큰 발급
           content:
             application/json:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/NewUserVerificationResponse'
-                  - $ref: '#/components/schemas/ExistingUserVerificationResponse'
+                $ref: '#/components/schemas/VerifyCodeResponse'
         '400':
-          description: 잘못되거나 만료된 인증 코드
+          $ref: '#/components/responses/BadRequest'
         '404':
-          description: 존재하지 않는 verificationId
+          $ref: '#/components/responses/NotFound'
 
   /users:
     post:
       summary: 회원 가입
-      description: SMS 인증 시 발급된 registerToken을 이용하여 회원 가입을 완료합니다.
+      description: SMS 인증 후 발급된 registerToken으로 회원 가입을 완료합니다.
       tags:
         - users
       operationId: registerUser
       parameters:
-        - $ref: '#/components/parameters/OSTypeHeader'
         - $ref: '#/components/parameters/RegisterTokenHeader'
       requestBody:
         required: true
@@ -126,13 +95,11 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenResponse'
+                $ref: '#/components/schemas/RegisterUserResponse'
         '400':
-          description: 잘못된 입력 데이터
+          $ref: '#/components/responses/BadRequest'
         '401':
-          description: 유효하지 않거나 만료된 registerToken
-        '409':
-          description: 이미 존재하는 사용자
+          $ref: '#/components/responses/Unauthorized'
 
   /users/token/refresh:
     post:
@@ -141,173 +108,93 @@ paths:
       tags:
         - auth
       operationId: refreshToken
-      parameters:
-        - $ref: '#/components/parameters/OSTypeHeader'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                refreshToken:
-                  type: string
-                  description: 유효한 리프레시 토큰
-              required:
-                - refreshToken
+              $ref: '#/components/schemas/RefreshTokenRequest'
       responses:
         '200':
           description: 토큰 갱신 성공
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TokenResponse'
+                $ref: '#/components/schemas/RefreshTokenResponse'
         '401':
-          description: 유효하지 않거나 만료된 리프레시 토큰
+          $ref: '#/components/responses/Unauthorized'
 
   /locations:
     get:
       summary: 장소 리스트 조회
-      description: 장소 리스트를 조회합니다.
+      description: 사용 가능한 모든 장소 리스트를 조회합니다.
       tags:
         - locations
-      parameters:
-        - $ref: '#/components/parameters/OSTypeHeader'
+      operationId: getLocations
       responses:
         '200':
           description: 장소 리스트 응답
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LocationsResponse'
+                $ref: '#/components/schemas/GetLocationsResponse'
 
   /companies:
     get:
-      summary: 직장명을 통한 직장 검색 기능
-      description: 키워드로 주어진 name으로 시작하는 직장 리스트를 반환합니다
+      summary: 직장명으로 직장 검색
+      description: 주어진 이름으로 시작하는 직장 리스트를 반환합니다.
       tags:
         - companies
+      operationId: searchCompanies
       parameters:
-        - name: name
-          in: query
-          description: Name of the company to search for
-          required: true
-          schema:
-            type: string
-            minLength: 1
-            maxLength: 128
-        - name: next
-          in: query
-          description: ID to start the search from for pagination
-          required: false
-          schema:
-            type: string
-            format: uuid
-        - name: limit
-          in: query
-          description: Maximum number of results to return
-          required: false
-          schema:
-            type: integer
-            default: 20
-            minimum: 1
-            maximum: 100
+        - $ref: '#/components/parameters/NameQuery'
+        - $ref: '#/components/parameters/NextQuery'
+        - $ref: '#/components/parameters/LimitQuery'
       responses:
         '200':
-          description: Successful response
+          description: 검색 성공
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  companies:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Company'
-                  next:
-                    type: string
-                    description: Next key for pagination, null if no more results
-                required:
-                  - companies
+                $ref: '#/components/schemas/SearchCompaniesResponse'
 
   /companies/{companyId}:
     get:
-      summary: 직장 식별자를 통한 직장 조회
-      description: 직장 식별자에 대응되는 직장 정보 조회
+      summary: 직장 상세 정보 조회
+      description: 직장 식별자에 해당하는 직장 상세 정보를 조회합니다.
       tags:
         - companies
+      operationId: getCompanyDetails
       parameters:
-        - name: companyId
-          in: path
-          description: 직장 식별자
-          required: true
-          schema:
-            type: string
-            format: uuid
+        - $ref: '#/components/parameters/CompanyIdPath'
       responses:
         '200':
-          description: Successful response
+          description: 조회 성공
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  company:
-                    $ref: '#/components/schemas/Company'
-                required:
-                  - company
+                $ref: '#/components/schemas/GetCompanyDetailsResponse'
         '404':
-          description: Error response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+          $ref: '#/components/responses/NotFound'
+
   /jobs:
     get:
       summary: 직업 검색
-      description: 직업을 검색합니다
+      description: 이름으로 직업을 검색합니다.
       tags:
         - jobs
+      operationId: searchJobs
       parameters:
-        - name: name
-          in: query
-          description: 직업명
-          required: true
-          schema:
-            type: string
-            minLength: 1
-            maxLength: 128
-        - name: next
-          in: query
-          description: ID to start the search from for pagination
-          required: false
-          schema:
-            type: string
-            format: uuid
-        - name: limit
-          in: query
-          description: Maximum number of results to return
-          required: false
-          schema:
-            type: integer
-            default: 20
-            minimum: 1
-            maximum: 100
+        - $ref: '#/components/parameters/NameQuery'
+        - $ref: '#/components/parameters/NextQuery'
+        - $ref: '#/components/parameters/LimitQuery'
       responses:
         '200':
-          description: 직업 검색 결과
+          description: 검색 성공
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  jobs:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Job'
-                  next:
-                    type: string
-                    description: 다음 페이지를 위한 키
+                $ref: '#/components/schemas/SearchJobsResponse'
 
 components:
   securitySchemes:
@@ -332,7 +219,77 @@ components:
       required: true
       schema:
         type: string
-      description: Register Token (번호 인증후 발급받은 토큰)
+      description: 번호 인증 후 발급받은 회원가입용 토큰
+
+    VerificationIdPath:
+      in: path
+      name: verificationId
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: 인증 요청 시 발급된 고유 식별자 (UUID 형식)
+
+    NameQuery:
+      in: query
+      name: name
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 128
+      description: 검색할 이름 (회사명 또는 직업명)
+
+    NextQuery:
+      in: query
+      name: next
+      required: false
+      schema:
+        type: string
+        format: uuid
+      description: 페이지네이션을 위한 다음 검색 시작 ID
+
+    LimitQuery:
+      in: query
+      name: limit
+      required: false
+      schema:
+        type: integer
+        default: 20
+        minimum: 1
+        maximum: 100
+      description: 반환할 최대 결과 수
+
+    CompanyIdPath:
+      in: path
+      name: companyId
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: 조회할 회사의 고유 식별자
+
+  responses:
+    BadRequest:
+      description: 잘못된 요청
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    Unauthorized:
+      description: 인증 실패
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: 리소스를 찾을 수 없음
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
 
   schemas:
     ErrorResponse:
@@ -341,29 +298,79 @@ components:
         timestamp:
           type: integer
           format: int64
-          description: 에러발생시각 timestamp
+          description: 에러 발생 시각 (Unix timestamp)
         status:
           type: integer
-          description: http status code
+          description: HTTP 상태 코드
         error:
           type: string
-          description: The error type
+          description: 에러 유형
           example: USER
         exception:
           type: string
-          description: The exception class name
+          description: 예외 클래스 이름
         message:
           type: string
-          description: Detailed error message, customizable per API
+          description: 상세 에러 메시지
         path:
           type: string
-          description: The path of the request that caused the error
+          description: 에러가 발생한 요청 경로
       required:
         - timestamp
         - status
         - error
         - message
         - path
+
+    PhoneNumberRequest:
+      type: object
+      properties:
+        phoneNumber:
+          type: string
+          description: 사용자의 전화번호 (한국 휴대폰 번호 형식)
+          pattern: '^01[0-9]{8,9}$'
+      required:
+        - phoneNumber
+
+    RequestVerificationResponse:
+      type: object
+      properties:
+        verificationId:
+          type: string
+          format: uuid
+          description: 인증 요청에 대한 고유 식별자 (UUID 형식)
+      required:
+        - verificationId
+
+    VerificationCodeRequest:
+      type: object
+      properties:
+        verificationCode:
+          type: string
+          description: 사용자가 입력한 SMS 인증 코드 (6자리 숫자)
+          pattern: '^\d{6}$'
+      required:
+        - verificationCode
+
+    VerifyCodeResponse:
+      type: object
+      description: 인증 응답 (기존 사용자와 신규 사용자 모두에 해당)
+      properties:
+        accessToken:
+          type: string
+          description: 액세스 토큰 (기존 사용자일 경우에만 포함)
+        refreshToken:
+          type: string
+          description: 리프레시 토큰 (기존 사용자일 경우에만 포함)
+        expiresIn:
+          type: integer
+          description: 액세스 토큰의 유효 기간 (초 단위, 기존 사용자일 경우에만 포함)
+        registerToken:
+          type: string
+          description: 회원 가입을 위한 토큰 (신규 사용자일 경우에만 포함)
+      oneOf:
+        - required: [ accessToken, refreshToken, expiresIn ]
+        - required: [ registerToken ]
 
     UserRegistration:
       type: object
@@ -386,9 +393,7 @@ components:
       description: 사용자 프로필 정보
       properties:
         gender:
-          type: string
-          enum: [ MALE, FEMALE ]
-          description: 사용자의 성별
+          $ref: '#/components/schemas/Gender'
         birthYear:
           type: integer
           description: 사용자의 출생년도
@@ -418,92 +423,45 @@ components:
       description: 사용자가 원하는 파트너의 조건
       properties:
         birthYearRange:
-          type: object
-          properties:
-            start:
-              type: integer
-              description: 원하는 파트너의 최소 년생
-              example: 1990
-            end:
-              type: integer
-              description: 원하는 파트너의 최대 년생
-              example: 2000
-          required:
-            - start
-            - end
+          $ref: '#/components/schemas/BirthYearRange'
         jobOccupation:
-          type: string
-          enum: [
-            BUSINESS_ADMIN,
-            FINANCE_INSURANCE,
-            RESEARCH_ENGINEERING,
-            EDUCATION,
-            LAW,
-            POLICE_MILITARY,
-            IT_SOFTWARE,
-            DESIGN_ART,
-            SPORTS,
-            HEALTHCARE,
-            FREELANCER,
-            OTHER,
-          ]
-          description: 선호하는 직업군
+          $ref: '#/components/schemas/JobOccupation'
         preferDistance:
-          type: string
-          enum: [ ONLY_MY_AREA, INCLUDE_SURROUNDING_REGIONS, ANYWHERE ]
-          description: 선호하는 거리 (내 지역만, 주변 지역 포함, 어디든)
+          $ref: '#/components/schemas/PreferDistance'
       required:
         - birthYearRange
         - jobOccupation
         - preferDistance
 
-    User:
+    BirthYearRange:
       type: object
-      description: 사용자 정보
       properties:
-        id:
-          type: string
-          description: 사용자 고유 식별자
-        name:
-          type: string
-          description: 사용자 이름
-        profile:
-          $ref: '#/components/schemas/UserProfile'
-        desiredPartner:
-          $ref: '#/components/schemas/UserDesiredPartner'
+        start:
+          type: integer
+          description: 원하는 파트너의 최소 년생
+          example: 1990
+        end:
+          type: integer
+          description: 원하는 파트너의 최대 년생
+          example: 2000
       required:
-        - id
-        - name
-        - profile
-        - desiredPartner
+        - start
+        - end
 
-    NewUserVerificationResponse:
+    RefreshTokenRequest:
       type: object
-      description: 새 사용자 인증 응답
       properties:
-        registerToken:
-          type: string
-          description: 회원 가입을 위한 토큰
-      required:
-        - registerToken
-
-    ExistingUserVerificationResponse:
-      type: object
-      description: 기존 사용자 인증 응답
-      properties:
-        accessToken:
-          type: string
-          description: 액세스 토큰
         refreshToken:
           type: string
-          description: 리프레시 토큰
-        expiresIn:
-          type: integer
-          description: 액세스 토큰의 유효 기간 (초 단위)
+          description: 유효한 리프레시 토큰
       required:
-        - accessToken
         - refreshToken
-        - expiresIn
+
+    RegisterUserResponse:
+      $ref: '#/components/schemas/TokenResponse'
+
+    RefreshTokenResponse:
+      $ref: '#/components/schemas/TokenResponse'
 
     TokenResponse:
       type: object
@@ -523,7 +481,7 @@ components:
         - refreshToken
         - expiresIn
 
-    LocationsResponse:
+    GetLocationsResponse:
       type: array
       items:
         $ref: '#/components/schemas/Location'
@@ -539,13 +497,35 @@ components:
         region:
           type: string
           example: "서울특별시"
-        sub_region:
+        subRegion:
           type: string
           example: "종로구"
       required:
         - id
         - region
-        - sub_region
+        - subRegion
+
+    SearchCompaniesResponse:
+      type: object
+      properties:
+        companies:
+          type: array
+          items:
+            $ref: '#/components/schemas/Company'
+        next:
+          type: string
+          format: uuid
+          description: 다음 페이지를 위한 키, 더 이상 결과가 없으면 null
+      required:
+        - companies
+
+    GetCompanyDetailsResponse:
+      type: object
+      properties:
+        company:
+          $ref: '#/components/schemas/Company'
+      required:
+        - company
 
     Company:
       type: object
@@ -560,6 +540,20 @@ components:
       required:
         - id
         - name
+
+    SearchJobsResponse:
+      type: object
+      properties:
+        jobs:
+          type: array
+          items:
+            $ref: '#/components/schemas/Job'
+        next:
+          type: string
+          format: uuid
+          description: 다음 페이지를 위한 키, 더 이상 결과가 없으면 null
+      required:
+        - jobs
 
     Job:
       type: object
@@ -579,3 +573,31 @@ components:
       type: string
       enum: [ IOS, AOS ]
       description: 사용자의 운영 체제 유형
+
+    Gender:
+      type: string
+      enum: [ MALE, FEMALE ]
+      description: 사용자의 성별
+
+    JobOccupation:
+      type: string
+      enum: [
+        BUSINESS_ADMIN,
+        FINANCE_INSURANCE,
+        RESEARCH_ENGINEERING,
+        EDUCATION,
+        LAW,
+        POLICE_MILITARY,
+        IT_SOFTWARE,
+        DESIGN_ART,
+        SPORTS,
+        HEALTHCARE,
+        FREELANCER,
+        OTHER
+      ]
+      description: 직업군 분류
+
+    PreferDistance:
+      type: string
+      enum: [ ONLY_MY_AREA, INCLUDE_SURROUNDING_REGIONS, ANYWHERE ]
+      description: 선호하는 거리 (내 지역만, 주변 지역 포함, 어디든)
