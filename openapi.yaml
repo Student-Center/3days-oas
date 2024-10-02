@@ -75,7 +75,7 @@ paths:
       description: 발급된 인증 코드 아이디(authCodeId)와 SMS 인증 코드로 인증을 완료합니다.
       tags:
         - auth
-      operationId: existingUserVerifyCode
+      operationId: newUserVerifyCode
       parameters:
         - $ref: '#/components/parameters/AuthCodeIdPath'
       requestBody:
