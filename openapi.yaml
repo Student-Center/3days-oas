@@ -398,9 +398,12 @@ components:
         refreshToken:
           type: string
           description: 리프레시 토큰
-        expiresIn:
+        accessTokenExpiresIn:
           type: integer
           description: 액세스 토큰의 유효 기간 (초 단위)
+        refreshTokenExpiresIn:
+          type: integer
+          description: 리프레시 토큰의 유효 기간 (초 단위)
 
     NewUserVerifyCodeResponse:
       type: object
@@ -408,6 +411,9 @@ components:
       required:
         - registerToken
       properties:
+        expiresIn:
+          type: integer
+          description: 회원 가입 토큰의 유효 기간 (초 단위)
         registerToken:
           type: string
           description: 회원 가입을 위한 토큰
