@@ -156,7 +156,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/RefreshTokenResponse'
         '400':
-          $ref: '#/components/schemas/ErrorResponse'
+          $ref: '#/components/responses/InvalidRefreshToken'
+        '401':
+          $ref: '#/components/responses/RefreshTokenExpired'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -370,6 +372,33 @@ components:
                 code: "1003"
                 message: "서버 오류가 발생했습니다."
 
+    RefreshTokenExpired:
+      description: 리프레시 토큰 만료
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            tokenExpired:
+              value:
+                time: "2024-05-01T00:00:00Z"
+                type: "AUTH"
+                code: "1008"
+                message: "리프레시 토큰이 만료되었습니다."
+
+    InvalidRefreshToken:
+      description: 유효하지 않은 리프레시 토큰
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            invalidToken:
+              value:
+                time: "2024-05-01T00:00:00Z"
+                type: "AUTH"
+                code: "1009"
+                message: "유효하지 않은 리프레시 토큰입니다."
 
   schemas:
     ErrorResponse:
