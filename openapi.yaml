@@ -504,6 +504,7 @@ components:
           type: string
           description: 사용자 전화번호
           pattern: '^01[0-9]{8,9}$'
+          example: "01012345678"
         profile:
           $ref: '#/components/schemas/UserProfile'
         desiredPartner:
