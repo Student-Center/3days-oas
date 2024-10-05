@@ -550,7 +550,6 @@ components:
         preferDistance:
           $ref: '#/components/schemas/PreferDistance'
       required:
-        - birthYearRange
         - jobOccupation
         - preferDistance
 
