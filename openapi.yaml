@@ -545,12 +545,12 @@ components:
       properties:
         birthYearRange:
           $ref: '#/components/schemas/BirthYearRange'
-        jobOccupation:
-          $ref: '#/components/schemas/JobOccupation'
+        jobOccupations:
+          $ref: '#/components/schemas/JobOccupations'
         preferDistance:
           $ref: '#/components/schemas/PreferDistance'
       required:
-        - jobOccupation
+        - jobOccupations
         - preferDistance
 
     BirthYearRange:
@@ -699,23 +699,25 @@ components:
       enum: [ MALE, FEMALE ]
       description: 사용자의 성별
 
-    JobOccupation:
-      type: string
-      enum: [
-        BUSINESS_ADMIN,
-        FINANCE_INSURANCE,
-        RESEARCH_ENGINEERING,
-        EDUCATION,
-        LAW,
-        POLICE_MILITARY,
-        IT_SOFTWARE,
-        DESIGN_ART,
-        SPORTS,
-        HEALTHCARE,
-        FREELANCER,
-        OTHER
-      ]
-      description: 직업군 분류
+    JobOccupations:
+      type: array
+      items:
+        type: string
+        enum: [
+          BUSINESS_ADMIN,
+          FINANCE_INSURANCE,
+          RESEARCH_ENGINEERING,
+          EDUCATION,
+          LAW,
+          POLICE_MILITARY,
+          IT_SOFTWARE,
+          DESIGN_ART,
+          SPORTS,
+          HEALTHCARE,
+          FREELANCER,
+          OTHER
+        ]
+        description: 직업군 분류
 
     PreferDistance:
       type: string
