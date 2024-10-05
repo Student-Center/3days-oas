@@ -500,12 +500,18 @@ components:
         name:
           type: string
           description: 사용자 이름
+        phoneNumber:
+          type: string
+          description: 사용자 전화번호
+          pattern: '^01[0-9]{8,9}$'
+          example: "01012345678"
         profile:
           $ref: '#/components/schemas/UserProfile'
         desiredPartner:
           $ref: '#/components/schemas/UserDesiredPartner'
       required:
         - name
+        - phoneNumber
         - profile
         - desiredPartner
 
