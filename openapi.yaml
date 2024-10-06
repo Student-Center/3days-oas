@@ -711,16 +711,22 @@ components:
         type: string
         enum: [
           BUSINESS_ADMIN,
-          FINANCE_INSURANCE,
-          RESEARCH_ENGINEERING,
-          EDUCATION,
-          LAW,
-          POLICE_MILITARY,
-          IT_SOFTWARE,
-          DESIGN_ART,
+          SALES_MARKETING,
+          RESEARCH_DEVELOPMENT,
+          IT_INFORMATION,
+          FINANCE_ACCOUNTING,
+          MANUFACTURING_PRODUCTION,
+          EDUCATION_ACADEMIA,
+          LAW_ADMINISTRATION,
+          MILITARY_SECURITY,
+          HEALTHCARE_MEDICAL,
+          MEDIA_ENTERTAINMENT,
+          ARTS_DESIGN,
           SPORTS,
-          HEALTHCARE,
-          FREELANCER,
+          CONSTRUCTION_ENGINEERING,
+          TRANSPORTATION_LOGISTICS,
+          AGRICULTURE_FARMING,
+          SERVICE_INDUSTRY,
           OTHER
         ]
         description: 직업군 분류
