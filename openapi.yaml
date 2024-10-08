@@ -13,8 +13,6 @@ tags:
     description: 지역 및 위치 정보 관련 API
   - name: companies
     description: 회사 정보 조회 및 검색 API
-  - name: jobs
-    description: 직업 정보 조회 및 검색 API
 
 paths:
   /auth/codes:
@@ -218,27 +216,6 @@ paths:
                 $ref: '#/components/schemas/GetCompanyDetailsResponse'
         '404':
           $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-
-  /jobs:
-    get:
-      summary: 직업 검색
-      description: 이름으로 직업을 검색합니다.
-      tags:
-        - jobs
-      operationId: searchJobs
-      parameters:
-        - $ref: '#/components/parameters/NameQuery'
-        - $ref: '#/components/parameters/NextQuery'
-        - $ref: '#/components/parameters/LimitQuery'
-      responses:
-        '200':
-          description: 검색 성공
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SearchJobsResponse'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
@@ -528,10 +505,8 @@ components:
           type: string
           format: uuid
           description: 사용자의 회사 ID
-        jobId:
-          type: string
-          format: uuid
-          description: 사용자의 직업 ID
+        jobOccupation:
+          $ref: '#/components/schemas/JobOccupation'
         locationIds:
           type: array
           items:
@@ -542,7 +517,7 @@ components:
         - gender
         - birthYear
         - companyId
-        - jobId
+        - jobOccupation
         - locationIds
 
     UserDesiredPartner:
@@ -667,34 +642,6 @@ components:
         - id
         - name
 
-    SearchJobsResponse:
-      type: object
-      properties:
-        jobs:
-          type: array
-          items:
-            $ref: '#/components/schemas/Job'
-        next:
-          type: string
-          format: uuid
-          description: 다음 페이지를 위한 키, 더 이상 결과가 없으면 null
-      required:
-        - jobs
-
-    Job:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: "직업 식별자"
-        name:
-          type: string
-          description: "직업명"
-      required:
-        - id
-        - name
-
     OSType:
       type: string
       enum: [ IOS, AOS ]
@@ -705,31 +652,34 @@ components:
       enum: [ MALE, FEMALE ]
       description: 사용자의 성별
 
+    JobOccupation:
+      type: string
+      enum: [
+        BUSINESS_ADMIN,
+        SALES_MARKETING,
+        RESEARCH_DEVELOPMENT,
+        IT_INFORMATION,
+        FINANCE_ACCOUNTING,
+        MANUFACTURING_PRODUCTION,
+        EDUCATION_ACADEMIA,
+        LAW_ADMINISTRATION,
+        MILITARY_SECURITY,
+        HEALTHCARE_MEDICAL,
+        MEDIA_ENTERTAINMENT,
+        ARTS_DESIGN,
+        SPORTS,
+        CONSTRUCTION_ENGINEERING,
+        TRANSPORTATION_LOGISTICS,
+        AGRICULTURE_FARMING,
+        SERVICE_INDUSTRY,
+        OTHER
+      ]
+      description: 직업군 분류
+
     JobOccupations:
       type: array
       items:
-        type: string
-        enum: [
-          BUSINESS_ADMIN,
-          SALES_MARKETING,
-          RESEARCH_DEVELOPMENT,
-          IT_INFORMATION,
-          FINANCE_ACCOUNTING,
-          MANUFACTURING_PRODUCTION,
-          EDUCATION_ACADEMIA,
-          LAW_ADMINISTRATION,
-          MILITARY_SECURITY,
-          HEALTHCARE_MEDICAL,
-          MEDIA_ENTERTAINMENT,
-          ARTS_DESIGN,
-          SPORTS,
-          CONSTRUCTION_ENGINEERING,
-          TRANSPORTATION_LOGISTICS,
-          AGRICULTURE_FARMING,
-          SERVICE_INDUSTRY,
-          OTHER
-        ]
-        description: 직업군 분류
+        $ref: '#/components/schemas/JobOccupation'
 
     PreferDistance:
       type: string
