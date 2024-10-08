@@ -162,25 +162,29 @@ paths:
 
   /locations:
     get:
-      summary: 장소 리스트 조회
-      description: 사용 가능한 모든 장소 리스트를 조회합니다.
+      summary: 지역 검색
+      description: 지역 정보를 검색합니다.
       tags:
         - locations
-      operationId: getLocations
+      operationId: searchLocations
+      parameters:
+        - $ref: '#/components/parameters/NameQuery'
+        - $ref: '#/components/parameters/NextQuery'
+        - $ref: '#/components/parameters/LimitQuery'
       responses:
         '200':
-          description: 장소 리스트 응답
+          description: 지역 검색 결과
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetLocationsResponse'
+                $ref: '#/components/schemas/SearchLocationsResponse'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
   /companies:
     get:
-      summary: 직장명으로 직장 검색
-      description: 주어진 이름으로 시작하는 직장 리스트를 반환합니다.
+      summary: 직장명 검색
+      description: 직장을 검색합니다.
       tags:
         - companies
       operationId: searchCompanies
@@ -261,7 +265,7 @@ components:
         type: string
         minLength: 1
         maxLength: 128
-      description: 검색할 이름 (회사명 또는 직업명)
+      description: 검색할 이름
 
     NextQuery:
       in: query
@@ -582,10 +586,19 @@ components:
         - refreshToken
         - expiresIn
 
-    GetLocationsResponse:
-      type: array
-      items:
-        $ref: '#/components/schemas/Location'
+    SearchLocationsResponse:
+      type: object
+      properties:
+        locations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Location'
+        next:
+          type: string
+          format: uuid
+          description: 다음 페이지를 위한 키, 더 이상 결과가 없으면 null
+      required:
+        - locations
       description: 위치 정보 리스트 응답
 
     Location:
