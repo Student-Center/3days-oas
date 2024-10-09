@@ -142,8 +142,6 @@ paths:
       operationId: getMyUserInfo
       security:
         - BearerAuth: [ ]
-      parameters:
-        - $ref: '#/components/parameters/AuthorizationHeader'
       responses:
         '200':
           description: 조회 성공
