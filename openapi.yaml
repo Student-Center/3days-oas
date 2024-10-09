@@ -190,7 +190,7 @@ paths:
       operationId: getLocationRegions
       responses:
         '200':
-          description: 시, 도 단위 지역 목록 조회 응답
+          description: 조회 성공
           content:
             application/json:
               schema:
