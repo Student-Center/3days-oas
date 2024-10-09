@@ -133,6 +133,29 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
+  /users/my:
+    get:
+      summary: 내 프로필 조회
+      description: 현재 로그인한 사용자의 프로필 정보를 조회합니다.
+      tags:
+        - users
+      operationId: getMyUserInfo
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMyUserInfoResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
   /auth/token/refresh:
     post:
       summary: 액세스 토큰 갱신
@@ -339,6 +362,34 @@ components:
                 code: "1002"
                 message: "리소스를 찾을 수 없습니다."
 
+    Unauthorized:
+      description: 토큰 만료
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            unauthorized:
+              value:
+                time: "2024-05-01T00:00:00Z"
+                type: "AUTH"
+                code: "1001"
+                message: "인증에 실패했습니다."
+
+    Forbidden:
+      description: 권한 없음
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            forbidden:
+              value:
+                time: "2024-05-01T00:00:00Z"
+                type: "AUTH"
+                code: "1002"
+                message: "토큰이 만료되었습니다."
+
     InternalServerError:
       description: 서버 오류
       content:
@@ -486,6 +537,26 @@ components:
           description: 사용자 전화번호
           pattern: '^01[0-9]{8,9}$'
           example: "01012345678"
+        profile:
+          $ref: '#/components/schemas/UserProfile'
+        desiredPartner:
+          $ref: '#/components/schemas/UserDesiredPartner'
+      required:
+        - name
+        - phoneNumber
+        - profile
+        - desiredPartner
+
+    GetMyUserInfoResponse:
+      type: object
+      properties:
+        name:
+          type: string
+          description: 사용자 이름
+        phoneNumber:
+          type: string
+          description: 사용자의 전화번호 (한국 휴대폰 번호 형식)
+          pattern: '^01[0-9]{8,9}$'
         profile:
           $ref: '#/components/schemas/UserProfile'
         desiredPartner:
