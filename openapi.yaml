@@ -142,6 +142,8 @@ paths:
       operationId: getMyUserInfo
       security:
         - BearerAuth: [ ]
+      parameters:
+        - $ref: '#/components/parameters/AuthorizationHeader'
       responses:
         '200':
           description: 조회 성공
@@ -268,6 +270,15 @@ components:
       schema:
         type: string
       description: 번호 인증 후 발급받은 회원가입용 토큰
+
+    AuthorizationHeader:
+      in: header
+      name: Authorization
+      required: true
+      schema:
+        type: string
+        format: JWT
+      description: Bearer Access Token
 
     AuthCodeIdPath:
       in: path
