@@ -540,6 +540,10 @@ components:
     GetMyUserInfoResponse:
       type: object
       properties:
+        id:
+          type: string
+          format: uuid
+          description: 사용자 식별자
         name:
           type: string
           description: 사용자 이름
