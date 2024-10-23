@@ -635,6 +635,7 @@ components:
       required:
         - jobOccupations
         - preferDistance
+        - birthYearRange
 
     BirthYearRange:
       type: object
@@ -647,9 +648,6 @@ components:
           type: integer
           description: 원하는 파트너의 최대 년생
           example: 2000
-      required:
-        - start
-        - end
 
     RefreshTokenRequest:
       type: object
