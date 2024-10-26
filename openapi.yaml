@@ -631,9 +631,9 @@ components:
           $ref: '#/components/schemas/JobOccupations'
         preferDistance:
           $ref: '#/components/schemas/PreferDistance'
-        wannaSameCompany:
+        allowSameCompany:
           type: boolean
-          description: 같은 회사에 근무하는 파트너를 원하는지 여부
+          description: 같은 회사에 근무하는 파트너를 허용하는지 여부 (companyID가 없을 경우 null)
       required:
         - jobOccupations
         - preferDistance
