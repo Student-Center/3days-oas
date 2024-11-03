@@ -834,6 +834,7 @@ components:
           content:
             type: string
             description: 위젯 내용
+            minLength: 1
             maxLength: 40
 
     ProfileWidgetType:
@@ -841,13 +842,17 @@ components:
       enum: [
         HOBBY,
         STYLE,
-        BODY_TYPE,
-        MUSIC,
-        DRAMA_MOVIE,
-        BOOK,
         MBTI,
+        MUSIC,
+        BODY_TYPE,
+        FOOD,
+        MOVIE,
+        DRAMA,
+        BOOK,
+        TRAVEL,
+        DRINKING,
+        MARRIAGE,
         RELIGION,
         SMOKING,
-        DRINKING,
       ]
       description: 프로필 위젯 타입
