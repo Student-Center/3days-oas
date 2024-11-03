@@ -169,8 +169,8 @@ paths:
             schema:
               $ref: '#/components/schemas/PutProfileWidgetRequest'
       responses:
-        '201':
-          description: 프로필 위젯 추가 성공
+        '200':
+          description: 프로필 위젯 추가/수정 성공
           content:
             application/json:
               schema:
