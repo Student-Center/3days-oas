@@ -625,6 +625,7 @@ components:
         - phoneNumber
         - profile
         - desiredPartner
+        - profileWidgets
 
     UserProfile:
       type: object
