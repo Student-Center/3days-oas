@@ -153,6 +153,34 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /users/profileWidgets:
+    put:
+      summary: 프로필 위젯 추가 및 수정
+      description: 현재 사용자의 프로필 위젯을 추가 및 수정합니다.
+      tags:
+        - users
+      operationId: putProfileWidget
+      security:
+        - BearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutProfileWidgetRequest'
+      responses:
+        '201':
+          description: 프로필 위젯 추가 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PutProfileWidgetResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /auth/token/refresh:
     post:
@@ -588,6 +616,10 @@ components:
           $ref: '#/components/schemas/UserProfile'
         desiredPartner:
           $ref: '#/components/schemas/UserDesiredPartner'
+        profileWidgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProfileWidget'
       required:
         - name
         - phoneNumber
@@ -787,3 +819,35 @@ components:
       type: string
       enum: [ ONLY_MY_AREA, INCLUDE_SURROUNDING_REGIONS, ANYWHERE ]
       description: 선호하는 거리 (내 지역만, 주변 지역 포함, 어디든)
+
+    PutProfileWidgetRequest:
+      $ref: '#/components/schemas/ProfileWidget'
+
+    PutProfileWidgetResponse:
+      $ref: '#/components/schemas/ProfileWidget'
+
+    ProfileWidget:
+      type: object
+      properties:
+          type:
+            $ref: '#/components/schemas/ProfileWidgetType'
+          content:
+            type: string
+            description: 위젯 내용
+            maxLength: 40
+
+    ProfileWidgetType:
+      type: string
+      enum: [
+        HOBBY,
+        STYLE,
+        BODY_TYPE,
+        MUSIC,
+        DRAMA_MOVIE,
+        BOOK,
+        MBTI,
+        RELIGION,
+        SMOKING,
+        DRINKING,
+      ]
+      description: 프로필 위젯 타입
