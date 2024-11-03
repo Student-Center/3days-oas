@@ -836,6 +836,9 @@ components:
             description: 위젯 내용
             minLength: 1
             maxLength: 40
+      required:
+        - type
+        - content
 
     ProfileWidgetType:
       type: string
