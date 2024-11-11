@@ -211,6 +211,7 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /users/profileWidgets/{type}:
     delete:
       summary: 프로필 위젯 삭제
       description: 현재 사용자의 프로필 위젯을 삭제합니다.
