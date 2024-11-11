@@ -220,7 +220,7 @@ paths:
       security:
         - BearerAuth: [ ]
       parameters:
-        - in: query
+        - in: path
           name: type
           required: true
           schema:
