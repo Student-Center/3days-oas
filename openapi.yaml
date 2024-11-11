@@ -211,6 +211,30 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: 프로필 위젯 삭제
+      description: 현재 사용자의 프로필 위젯을 삭제합니다.
+      tags:
+        - users
+      operationId: deleteProfileWidget
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - in: query
+          name: type
+          required: true
+          schema:
+            $ref: '#/components/schemas/ProfileWidgetType'
+          description: 삭제할 프로필 위젯 타입
+      responses:
+        '204':
+          description: 프로필 위젯 삭제 성공
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /auth/token/refresh:
     post:
@@ -280,7 +304,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Location'
         '404':
-            $ref: '#/components/responses/NotFound'
+          $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
