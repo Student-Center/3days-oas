@@ -668,7 +668,7 @@ components:
           description: 사용자의 전화번호 (한국 휴대폰 번호 형식)
           pattern: '^01[0-9]{8,9}$'
         profile:
-          $ref: '#/components/schemas/UserProfile'
+          $ref: '#/components/schemas/UserProfileDisplayInfo'
         desiredPartner:
           $ref: '#/components/schemas/UserDesiredPartner'
         profileWidgets:
@@ -752,6 +752,78 @@ components:
         - birthYear
         - jobOccupation
         - locationIds
+
+    UserProfileDisplayInfo:
+      type: object
+      description: 사용자 프로필 표시 정보
+      properties:
+        gender:
+          $ref: '#/components/schemas/Gender'
+        birthYear:
+          type: integer
+          description: 사용자의 출생년도
+        jobOccupation:
+          $ref: '#/components/schemas/JobOccupationDisplayInfo'
+        company:
+          $ref: '#/components/schemas/CompanyDisplayInfo'
+        locations:
+          type: array
+          items:
+            $ref: '#/components/schemas/LocationDisplayInfo'
+          description: 활동 지역 정보 목록
+      required:
+        - gender
+        - birthYear
+        - jobOccupation
+        - locations
+
+    # 회사 표시 정보
+    CompanyDisplayInfo:
+      type: object
+      description: 회사 표시 정보
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 회사 식별자
+        display:
+          type: string
+          description: 화면에 표시될 회사명
+      required:
+        - id
+        - display
+
+    # 직군 표시 정보
+    JobOccupationDisplayInfo:
+      type: object
+      description: 직군 표시 정보
+      properties:
+        code:
+          $ref: '#/components/schemas/JobOccupation'
+        display:
+          type: string
+          description: 화면에 표시될 직군명
+          example: "IT/정보통신"
+      required:
+        - code
+        - display
+
+    # 지역 표시 정보
+    LocationDisplayInfo:
+      type: object
+      description: 지역 표시 정보
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 지역 식별자
+        display:
+          type: string
+          description: 화면에 표시될 지역명
+          example: "강남구"
+      required:
+        - id
+        - display
 
     UserDesiredPartner:
       type: object
