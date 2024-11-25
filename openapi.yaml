@@ -779,12 +779,12 @@ components:
         - birthYearRange
 
     UpdateUserDesiredPartnerResponse:
-        type: object
-        properties:
-          desiredPartner:
-            $ref: '#/components/schemas/UserDesiredPartner'
-        required:
-            - desiredPartner
+      type: object
+      properties:
+        desiredPartner:
+          $ref: '#/components/schemas/UserDesiredPartner'
+      required:
+        - desiredPartner
 
     UserProfile:
       type: object
