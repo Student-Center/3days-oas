@@ -182,6 +182,34 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
+  /users/my/desiredPartner:
+    put:
+      summary: 내 원하는 파트너 수정
+      description: 현재 로그인한 사용자의 원하는 파트너 정보를 수정합니다.
+      tags:
+        - users
+      operationId: updateMyDesiredPartner
+      security:
+        - BearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserDesiredPartnerRequest'
+      responses:
+        '200':
+          description: 수정 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateUserDesiredPartnerResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /users/profileWidgets:
     put:
@@ -733,6 +761,29 @@ components:
         - name
         - phoneNumber
         - profile
+        - desiredPartner
+
+    UpdateUserDesiredPartnerRequest:
+      type: object
+      description: 사용자가 원하는 파트너의 조건
+      properties:
+        birthYearRange:
+          $ref: '#/components/schemas/BirthYearRange'
+        jobOccupations:
+          $ref: '#/components/schemas/JobOccupations'
+        preferDistance:
+          $ref: '#/components/schemas/PreferDistance'
+      required:
+        - jobOccupations
+        - preferDistance
+        - birthYearRange
+
+    UpdateUserDesiredPartnerResponse:
+      type: object
+      properties:
+        desiredPartner:
+          $ref: '#/components/schemas/UserDesiredPartner'
+      required:
         - desiredPartner
 
     UserProfile:
