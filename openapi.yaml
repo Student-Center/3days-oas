@@ -182,6 +182,66 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
+  /users/my/profile-images/upload-url:
+    get:
+      summary: 프로필 이미지 업로드 URL 생성
+      deprecated: false
+      description: 프로필 이미지 업로드를 위한 URL을 생성합니다.
+      operationId: getProfileImageUploadUrl
+      security:
+        - BearerAuth: [ ]
+      tags:
+        - users
+      parameters:
+        - in: query
+          name: extension
+          required: true
+          schema:
+            $ref: '#/components/schemas/ProfileImageExtension'
+          description: 이미지 확장자
+      responses:
+        '200':
+          description: URL 생성 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetProfileImageUploadUrlResponse'
+          headers: { }
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /users/my/profile-images/upload-complete:
+    post:
+      summary: 프로필 이미지 업로드 완료 콜백
+      description:
+        프로필 이미지 업로드 완료 후 콜백을 받아 이미지를 등록합니다.
+        업로드 완료후 일정시간 이내에 콜백이 호출되지 않을경우 이미지는 삭제됩니다.
+      tags:
+        - users
+      operationId: completeProfileImageUpload
+      security:
+        - BearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompleteProfileImageUploadRequest'
+      responses:
+        '200':
+          description: 이미지 등록 성공
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+
   /users/my/desiredPartner:
     put:
       summary: 내 원하는 파트너 수정
@@ -994,6 +1054,23 @@ components:
       required:
         - company
 
+    GetProfileImageUploadUrlResponse:
+      type: object
+      properties:
+        imageId:
+          type: string
+          format: uuid
+          description: 이미지 ID
+        url:
+          type: string
+          description: 업로드 URL
+        extension:
+          $ref: '#/components/schemas/ProfileImageExtension'
+      required:
+        - extension
+        - url
+        - imageId
+
     Company:
       type: object
       properties:
@@ -1058,6 +1135,18 @@ components:
     PutProfileWidgetResponse:
       $ref: '#/components/schemas/ProfileWidget'
 
+    CompleteProfileImageUploadRequest:
+      type: object
+      properties:
+        imageId:
+          type: string
+          format: uuid
+          description: 이미지 ID
+        extension:
+          $ref: '#/components/schemas/ProfileImageExtension'
+      required:
+          - imageId
+
     ProfileWidget:
       type: object
       properties:
@@ -1091,3 +1180,8 @@ components:
         SMOKING,
       ]
       description: 프로필 위젯 타입
+
+    ProfileImageExtension:
+      type: string
+      enum: [ PNG ]
+      description: 프로필 이미지 확장자
