@@ -1150,6 +1150,7 @@ components:
           $ref: '#/components/schemas/ProfileImageExtension'
       required:
           - imageId
+          - extension
 
     ProfileWidget:
       type: object
