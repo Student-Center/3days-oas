@@ -1066,10 +1066,14 @@ components:
           description: 업로드 URL
         extension:
           $ref: '#/components/schemas/ProfileImageExtension'
+        uploadExpiresIn:
+          type: integer
+          description: 업로드 유효 시간 (초 단위)
       required:
         - extension
         - url
         - imageId
+        - uploadExpiresIn
 
     Company:
       type: object
