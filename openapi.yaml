@@ -241,6 +241,32 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
+  /users/my/profile-images/{imageId}:
+    delete:
+      summary: 프로필 이미지 삭제
+      description: 특정 프로필 이미지를 삭제합니다.
+      tags:
+        - users
+      operationId: deleteProfileImage
+      security:
+        - BearerAuth: [ ]
+      parameters:
+        - in: path
+          name: imageId
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: 삭제할 프로필 이미지 ID
+      responses:
+        '204':
+          description: 삭제 성공
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /users/my/desiredPartner:
     put:
@@ -751,6 +777,11 @@ components:
         name:
           type: string
           description: 사용자 이름
+        profileImages:
+          type: array
+          description: 프로필 이미지 목록
+          items:
+            $ref: '#/components/schemas/ProfileImage'
         phoneNumber:
           type: string
           description: 사용자의 전화번호 (한국 휴대폰 번호 형식)
@@ -1150,6 +1181,7 @@ components:
           $ref: '#/components/schemas/ProfileImageExtension'
       required:
           - imageId
+          - extension
 
     ProfileWidget:
       type: object
@@ -1189,3 +1221,21 @@ components:
       type: string
       enum: [ PNG ]
       description: 프로필 이미지 확장자
+
+    ProfileImage:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 이미지 식별자
+        url:
+          type: string
+          format: uri
+          description: 이미지 URL
+        extension:
+          $ref: '#/components/schemas/ProfileImageExtension'
+      required:
+        - id
+        - url
+        - extension
