@@ -302,7 +302,7 @@ paths:
       summary: 유저 커넥션 활성화 상태 변경
       description: 현재 로그인한 사용자의 커넥션 상태를 활성화 또는 비활성화합니다.
       tags:
-        - Users
+        - users
       operationId: updateConnectionStatus
       security:
         - BearerAuth: [ ]
