@@ -823,12 +823,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProfileWidget'
+        status:
+          $ref: '#/components/schemas/ConnectionStatus'
       required:
         - name
         - phoneNumber
         - profile
         - desiredPartner
         - profileWidgets
+        - status
 
     UpdateMyUserInfoRequest:
       type: object
@@ -1216,9 +1219,7 @@ components:
       type: object
       properties:
         status:
-          type: string
-          enum: [ ACTIVE, INACTIVE ]
-          description: "변경할 커넥션 상태 (ACTIVE: 활성화, INACTIVE: 비활성화)"
+          $ref: '#/components/schemas/ConnectionStatus'
       required:
         - status
 
@@ -1226,9 +1227,7 @@ components:
       type: object
       properties:
         status:
-          type: string
-          enum: [ ACTIVE, INACTIVE ]
-          description: 현재 커넥션 상태
+          $ref: '#/components/schemas/ConnectionStatus'
       required:
         - status
 
@@ -1289,3 +1288,8 @@ components:
         - id
         - url
         - extension
+
+    ConnectionStatus:
+      type: string
+      enum: [ ACTIVE, INACTIVE ]
+      description: 커넥션 활성화 상태
