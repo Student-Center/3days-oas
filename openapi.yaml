@@ -1389,7 +1389,7 @@ components:
       properties:
         type:
           type: string
-          enum: [ TEXT ]
+          enum: [ TEXT, CARD ]
         text:
           type: string
         cardColor:
