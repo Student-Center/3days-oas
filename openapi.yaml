@@ -184,6 +184,25 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
+    delete:
+      summary: 회원 탈퇴
+      description: 요청 회원을 탈퇴합니다.
+      tags:
+        - users
+      operationId: deleteMyUser
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '204':
+          description: 회원 탈퇴 성공
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+
   /users/my/profile-images/upload-url:
     get:
       summary: 프로필 이미지 업로드 URL 생성
