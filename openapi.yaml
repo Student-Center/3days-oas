@@ -540,7 +540,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MessageList'
+                $ref: '#/components/schemas/GetChannelMessagesResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -902,9 +902,9 @@ components:
           format: uuid
           description: 사용자의 회사 ID
         allowSameCompany:
-            type: boolean
-            nullable: true
-            description: 같은 회사에 근무하는 파트너를 허용하는지 여부 (companyID가 없을 경우 null)
+          type: boolean
+          nullable: true
+          description: 같은 회사에 근무하는 파트너를 허용하는지 여부 (companyID가 없을 경우 null)
         locationIds:
           type: array
           items:
@@ -1266,8 +1266,8 @@ components:
         extension:
           $ref: '#/components/schemas/ProfileImageExtension'
       required:
-          - imageId
-          - extension
+        - imageId
+        - extension
 
     UpdateConnectionStatusRequest:
       type: object
@@ -1289,13 +1289,13 @@ components:
     ProfileWidget:
       type: object
       properties:
-          type:
-            $ref: '#/components/schemas/ProfileWidgetType'
-          content:
-            type: string
-            description: 위젯 내용
-            minLength: 1
-            maxLength: 40
+        type:
+          $ref: '#/components/schemas/ProfileWidgetType'
+        content:
+          type: string
+          description: 위젯 내용
+          minLength: 1
+          maxLength: 40
       required:
         - type
         - content
@@ -1348,21 +1348,17 @@ components:
       enum: [ ACTIVE, INACTIVE ]
       description: 커넥션 활성화 상태
 
-    MessageList:
+    GetChannelMessagesResponse:
       type: object
       properties:
         messages:
           type: array
           items:
             $ref: '#/components/schemas/Message'
-        hasNext:
-          type: boolean
-          description: 다음 페이지 존재 여부
-        nextCursor:
+        next:
           type: string
           format: uuid
-          description: 다음 페이지 조회를 위한 커서 (마지막 메시지 ID)
-          nullable: true
+          description: 다음 페이지를 위한 키, 더 이상 결과가 없으면 null
 
     Message:
       type: object
@@ -1398,5 +1394,4 @@ components:
           type: string
         cardColor:
           type: string
-          enum: [ BLUE, PINK ]
           nullable: true
