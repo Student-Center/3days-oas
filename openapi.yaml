@@ -741,7 +741,6 @@ components:
       properties:
         time:
           type: string
-          format: date-time
           description: 에러 발생 시각 (ISO 8601)
           example: "2024-05-01T00:00:00Z"
         type:
@@ -1376,7 +1375,6 @@ components:
           $ref: '#/components/schemas/MessageContent'
         createdAt:
           type: string
-          format: date-time
       required:
         - id
         - channelId
