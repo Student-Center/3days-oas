@@ -17,6 +17,38 @@ tags:
     description: 채팅 관련 API
 
 paths:
+  /admin/chat/channels/{channelId}/system-message:
+    post:
+      summary: 시스템 메시지 전송
+      description: 특정 채널에 시스템 메시지를 전송합니다. #TODO: 시스템 메시지 전송 권한 확인
+      tags:
+        - admin
+      operationId: sendSystemMessage
+      parameters:
+        - in: path
+          name: channelId
+          required: true
+          schema:
+              type: string
+              format: uuid
+          description: 채널 ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendSystemMessageRequest'
+      responses:
+        '201':
+          description: 메시지 전송 성공
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /auth/codes:
     post:
       summary: SMS 인증 요청
@@ -962,6 +994,21 @@ components:
       required:
         - desiredPartner
 
+    SendSystemMessageRequest:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/SystemMessageType'
+        text:
+          type: string
+        nextCardTitle:
+          type: string
+          description: "Next card title (only for SYSTEM message with NEXT_CARD type)"
+          nullable: true
+      required:
+        - type
+        - text
+
     UserProfile:
       type: object
       description: 사용자 프로필 정보
@@ -1378,7 +1425,6 @@ components:
       required:
         - id
         - channelId
-        - senderUserId
         - content
         - createdAt
 
@@ -1387,9 +1433,28 @@ components:
       properties:
         type:
           type: string
-          enum: [ TEXT, CARD ]
+          enum: [ TEXT, CARD, SYSTEM ]
         text:
           type: string
+        title:
+          type: string
+          description: "Title for CARD type messages"
+          nullable: true
         cardColor:
           type: string
+          enum: [ BLUE, PINK ]
           nullable: true
+        systemMessageType:
+          $ref: '#/components/schemas/SystemMessageType'
+        nextCardTitle:
+          type: string
+          description: "Next card title (only for SYSTEM message with NEXT_CARD type)"
+          nullable: true
+      required:
+        - type
+        - text
+
+    SystemMessageType:
+      type: string
+      enum: [ INFO, NEXT_CARD ]
+      description: 시스템 메시지 타입
