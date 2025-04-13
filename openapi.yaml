@@ -1485,28 +1485,33 @@ components:
       type: object
       properties:
         connectionAttempt:
-          type: object
-          properties:
-            id:
-              type: string
-              format: uuid
-            userId:
-              type: string
-              format: uuid
-            connection:
-              $ref: '#/components/schemas/Connection'
-            status:
-              $ref: '#/components/schemas/ConnectionAttemptStatus'
-            attemptDate:
-              type: string
-            createdAt:
-              type: string
-          required:
-            - id
-            - userId
-            - status
-            - attemptDate
-            - createdAt
+          $ref: '#/components/schemas/ConnectionAttempt'
+      required:
+        - connectionAttempt
+
+    ConnectionAttempt:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        connection:
+          $ref: '#/components/schemas/Connection'
+        status:
+          $ref: '#/components/schemas/ConnectionAttemptStatus'
+        attemptDate:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - userId
+        - status
+        - attemptDate
+        - createdAt
 
     ConnectionAttemptStatus:
       type: string
