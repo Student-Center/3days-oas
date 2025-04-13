@@ -29,8 +29,8 @@ paths:
           name: channelId
           required: true
           schema:
-              type: string
-              format: uuid
+            type: string
+            format: uuid
           description: 채널 ID
       requestBody:
         required: true
@@ -573,6 +573,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetChannelMessagesResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /connections/my/current:
+    get:
+      summary: 자신의 현재 커넥션을 조회합니다.
+      description: 자신의 현재 커넥션을 조회합니다.
+      tags:
+        - connections
+      security:
+        - BearerAuth: [ ]
+      responses:
+        '200':
+          description: 커넥션 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetMyConnectionResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -1458,3 +1480,112 @@ components:
       type: string
       enum: [ INFO, NEXT_CARD ]
       description: 시스템 메시지 타입
+
+    GetMyConnectionResponse:
+      type: object
+      properties:
+        connectionAttempt:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            userId:
+              type: string
+              format: uuid
+            connection:
+              $ref: '#/components/schemas/Connection'
+            status:
+              $ref: '#/components/schemas/ConnectionAttemptStatus'
+            attemptDate:
+              type: string
+            createdAt:
+              type: string
+          required:
+            - id
+            - userId
+            - status
+            - attemptDate
+            - createdAt
+
+    ConnectionAttemptStatus:
+      type: string
+      enum: [ CONNECTING, CONNECTED, FAILED, UNKNOWN ]
+      description: 커넥션 시도 상태
+
+    Connection:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        partner:
+          $ref: '#/components/schemas/Participant'
+        connectedAt:
+          type: string
+        cancellation:
+          $ref: '#/components/schemas/ConnectionCancellation'
+      required:
+        - id
+
+
+    Participant:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        name:
+          type: string
+          description: 사용자 이름
+        profileImages:
+          type: array
+          description: 프로필 이미지 목록
+          items:
+            $ref: '#/components/schemas/ProfileImage'
+        phoneNumber:
+          type: string
+          description: 사용자의 전화번호 (한국 휴대폰 번호 형식)
+          pattern: '^01[0-9]{8,9}$'
+        profile:
+          $ref: '#/components/schemas/UserProfileDisplayInfo'
+        profileWidgets:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProfileWidget'
+      required:
+        - id
+        - userId
+        - name
+        - phoneNumber
+        - profile
+        - profileWidgets
+
+    ConnectionCancellation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        reason:
+          $ref: '#/components/schemas/ConnectionCancellationReason'
+        detail:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - userId
+        - reason
+        - createdAt
+
+    ConnectionCancellationReason:
+      type: string
+      enum: [ NO_RESPONSE, FIRST_MESSAGE_TIMEOUT, DUPLICATED, REPORTED, ADMIN_CANCELLATION, ETC, UNKNOWN ]
+      description: 커넥션 취소 사유
