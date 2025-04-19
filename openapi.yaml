@@ -579,6 +579,38 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+  /chat/channels/{channelId}:
+    get:
+      summary: 채널 정보 조회
+      description: 채널의 상세 정보를 조회합니다.
+      tags:
+        - chat
+      operationId: getChannel
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: channelId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: 채널 ID
+      responses:
+        '200':
+          description: 채널 정보 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /connections/my/current:
     get:
@@ -1590,3 +1622,48 @@ components:
       type: string
       enum: [ NO_RESPONSE, FIRST_MESSAGE_TIMEOUT, DUPLICATED, REPORTED, ADMIN_CANCELLATION, ETC, UNKNOWN ]
       description: 커넥션 취소 사유
+
+    Channel:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 채널 식별자
+        connectionId:
+          type: string
+          format: uuid
+          description: 커넥션 식별자
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChannelMember'
+          description: 채널 멤버 목록
+        status:
+          type: string
+          enum: [ OPEN, PENDING, STRUCTURED_ONLY, CLOSED ]
+          description: 채널 상태
+        createdAt:
+          type: string
+          format: date-time
+          description: 채널 생성 시각
+      required:
+        - id
+        - connectionId
+        - members
+        - status
+        - createdAt
+
+    ChannelMember:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: 멤버(유저) 식별자
+        name:
+          type: string
+          description: 멤버 이름
+      required:
+        - id
+        - name
